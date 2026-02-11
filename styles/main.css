@@ -1,0 +1,795 @@
+ /* =========================
+       1. PAGE & ROOT BACKGROUND
+       ========================= */
+
+ @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+
+ body {
+     background-color: #f8f7ff;
+     font-family: 'Fredoka', sans-serif;
+ }
+
+ header[data-testid="stHeader"],
+ div[data-testid="stAppToolbar"] {
+     background: transparent !important;
+     background-color: transparent !important;
+ }
+
+ div[data-testid="stAppViewContainer"] {
+     background: linear-gradient(135deg, #7c3aed 0%, #9333ea 50%, #a855f7 100%) !important;
+     background-attachment: fixed !important;
+     /* Ensure there is no gap at the very top */
+     margin-top: 0 !important;
+     padding-top: 0 !important;
+ }
+
+ /* # Make the header transparent so it doesn't look like a solid block
+    # div[data-testid="stHeader"] {
+    #     background: rgba(0,0,0,0) !important;
+    #     color: white !important;
+    # } */
+
+ .stAppToolbar {
+     background: transparent !important;
+ }
+
+ /* =========================
+   2. MAIN CONTAINER 
+   ========================= */
+
+ .block-container {
+     max-width: 1000px !important;
+     width: 100% !important;
+     /* Increase padding here to push the white card AWAY from the top bar */
+     padding-top: 80px;
+     padding-bottom: 5rem !important;
+     margin: 0 auto !important;
+ }
+
+ /* =========================
+       3. APP HEADER
+       ========================= */
+
+ .app-header {
+     text-align: center;
+     font-size: 2.2rem;
+     font-weight: 800;
+     margin: 1.2rem 0 1.8rem 0;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     gap: 0.6rem;
+ }
+
+ .app-title-text {
+     letter-spacing: -0.5px;
+ }
+
+ .title-emoji {
+     font-size: 2.2rem;
+ }
+
+ .app-header h1 {
+     font-size: clamp(2.5rem, 6vw, 4rem);
+     color: #ffffff !important;
+     font-weight: 700;
+     margin: 0;
+     margin-bottom: 3rem !important;
+     letter-spacing: -0.01em;
+     text-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+ }
+
+ .app-header p {
+     font-size: 1.25rem;
+     color: rgba(255, 255, 255, 0.85) !important;
+     opacity: 0.95;
+     margin-top: 0.5rem;
+     font-weight: 400;
+ }
+
+ .floating-emoji {
+     display: inline-block;
+     animation: float 2.4s ease-in-out infinite;
+ }
+
+ @keyframes fadeInDown {
+     from {
+         opacity: 0;
+         transform: translateY(-20px);
+     }
+
+     to {
+         opacity: 1;
+         transform: translateY(0);
+     }
+ }
+
+ @keyframes heartbeat {
+
+     0%,
+     100% {
+         transform: scale(1);
+     }
+
+     25% {
+         transform: scale(1.15);
+     }
+
+     50% {
+         transform: scale(1);
+     }
+ }
+
+ @keyframes bounce {
+
+     0%,
+     100% {
+         transform: translateY(0);
+     }
+
+     50% {
+         transform: translateY(-10px);
+     }
+ }
+
+ @keyframes float {
+
+     0%,
+     100% {
+         transform: translateY(0px);
+     }
+
+     50% {
+         transform: translateY(-15px);
+     }
+ }
+
+ .splash-emoji {
+     font-size: 80px;
+     animation: heartbeat 2s ease-in-out infinite;
+     margin-bottom: 1rem;
+     display: block;
+     text-align: center;
+ }
+
+ .thinking-emoji {
+     font-size: 70px;
+     animation: bounce 1.5s ease-in-out infinite;
+     margin-bottom: 1rem;
+     display: block;
+     text-align: center;
+ }
+
+ .result-emoji {
+     font-size: 60px;
+     animation: float 3s ease-in-out infinite;
+     margin-bottom: 1rem;
+     display: block;
+     text-align: center;
+ }
+
+ /* =========================
+       4. THE CONTENT CARD (FIX)
+       ========================= */
+
+ /* ✅ ONLY THE FIRST VERTICAL BLOCK = MAIN CARD */
+ .block-container>div[data-testid="stVerticalBlock"]:first-of-type {
+     background: #fefcf8 !important;
+     border-radius: 32px !important;
+     padding: clamp(2.5rem, 5vw, 4rem) !important;
+     box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.25) !important;
+     max-width: 720px !important;
+     width: 95% !important;
+     margin: 0 auto !important;
+ }
+
+ /* Text inside main card only */
+ .block-container>div[data-testid="stVerticalBlock"]:first-of-type h1,
+ .block-container>div[data-testid="stVerticalBlock"]:first-of-type h2,
+ .block-container>div[data-testid="stVerticalBlock"]:first-of-type h3,
+ .block-container>div[data-testid="stVerticalBlock"]:first-of-type p,
+ .block-container>div[data-testid="stVerticalBlock"]:first-of-type label,
+ .block-container>div[data-testid="stVerticalBlock"]:first-of-type span {
+     color: #1f2937 !important;
+ }
+
+ /* Buttons remain untouched */
+ div.stButton>button {
+     border-radius: 16px !important;
+ }
+
+ @media (max-width: 768px) {
+     div.stButton>button {
+         min-width: 160px !important;
+         padding: 0.8rem 1.2rem !important;
+         font-size: 0.95rem !important;
+     }
+ }
+
+ /* =========================
+    BUTTON AREA (OUTSIDE CARD)
+    ========================= */
+
+ .bottom-actions {
+     max-width: 720px;
+     width: 95%;
+     margin: 1.5rem auto 0 auto;
+ }
+
+ /* Make sure buttons don't inherit card styles */
+ .bottom-actions div[data-testid="stVerticalBlock"],
+ .bottom-actions div[data-testid="column"] {
+     background: transparent !important;
+     box-shadow: none !important;
+     padding: 0 !important;
+ }
+
+ /* =========================
+       5. MODERN WIDGETS
+       ========================= */
+
+ .section-title {
+     font-size: 2rem;
+     font-weight: 700;
+     color: #3730a3;
+     margin-bottom: 2rem;
+     text-align: center;
+ }
+
+ .progress-text {
+     font-size: 0.9rem;
+     font-weight: 700;
+     color: #7c3aed;
+     text-transform: uppercase;
+     letter-spacing: 0.15em;
+     margin-bottom: 0.8rem;
+ }
+
+ /* Streamlit Progress Bar */
+ div[data-testid="stProgress"]>div>div>div>div {
+     background-color: #7c3aed !important;
+     height: 12px !important;
+     border-radius: 6px !important;
+ }
+
+ .question {
+     font-size: clamp(1.1rem, 4vw, 1.15rem);
+     font-weight: 600;
+     color: #374151;
+     line-height: 1.5;
+     margin-bottom: 1.2rem;
+ }
+
+ /* =========================
+    MOBILE BUTTON FIX (CRITICAL)
+    ========================= */
+ @media (max-width: 768px) {
+
+     /* All buttons */
+     div.stButton>button {
+         width: 100% !important;
+         /* Take full width of column on mobile */
+         min-width: 0 !important;
+         /* Allow shrinking */
+         padding: 0.8rem 1rem !important;
+         font-size: 0.95rem !important;
+         border-radius: 16px !important;
+         margin: 0.5rem auto !important;
+         /* Add vertical spacing */
+         display: block !important;
+         white-space: normal !important;
+         /* Allow text wrapping */
+         height: auto !important;
+     }
+
+     /* Center button containers and stack columns */
+     div[data-testid="column"] {
+         display: flex !important;
+         justify-content: center !important;
+         align-items: center !important;
+         width: 100% !important;
+         flex: 1 1 100% !important;
+         min-width: 100% !important;
+     }
+
+     /* Back button (secondary) */
+     div.stButton>button:not([kind="primary"]) {
+         background: #ede9fe !important;
+         color: #4c1d95 !important;
+         box-shadow: none !important;
+     }
+
+     /* Analyze / Primary CTA */
+     div.stButton>button[kind="primary"] {
+         border: none !important;
+         background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%) !important;
+         color: white !important;
+     }
+ }
+
+
+ /* Radio chips (Modern pill style) */
+ .stRadio label {
+     background: #f9fafb !important;
+     padding: 1rem 1.5rem !important;
+     border-radius: 16px !important;
+     font-weight: 600 !important;
+     border: 2px solid #e5e7eb !important;
+     transition: all 0.3s ease !important;
+     color: #374151 !important;
+     font-size: 1rem !important;
+ }
+
+ .stRadio label:hover {
+     background: #ede9fe !important;
+     color: #7c3aed !important;
+ }
+
+ .stRadio div[data-testid="stMarkdownContainer"] p {
+     font-weight: 600 !important;
+     color: inherit !important;
+     /* Ensure text color is inherited from forced label color */
+ }
+
+ /* Active state for radio (Targeting Streamlit's internal selection) */
+ div[data-testid="stRadio"] label[data-selected="true"] {
+     background: #7c3aed !important;
+     color: #ffffff !important;
+     /* Force white text for selected state */
+     border-color: #6d28d9 !important;
+     box-shadow: 0 10px 20px -5px rgba(124, 58, 237, 0.3) !important;
+ }
+
+ /* Selectbox & Sliders */
+ .stSelectbox div[data-baseweb="select"] {
+     border-radius: 16px !important;
+     border: 2px solid #e5e7eb !important;
+     background: white !important;
+     color: #1f2937 !important;
+ }
+
+ /* Force text color for selected value in selectbox */
+ .stSelectbox div[data-baseweb="select"] div {
+     color: #1f2937 !important;
+ }
+
+ .stSlider>div>div>div>div {
+     background-color: #7c3aed !important;
+ }
+
+ /* Date Input */
+ .stDateInput input {
+     border-radius: 16px !important;
+     border: 2px solid #e5e7eb !important;
+     background: white !important;
+     color: #1f2937 !important;
+     padding: 0.8rem !important;
+ }
+
+ /* Text Input & Text Area */
+ .stTextInput input,
+ .stTextArea textarea {
+     border-radius: 16px !important;
+     border: 2px solid #e5e7eb !important;
+     background: white !important;
+     color: #1f2937 !important;
+     padding: 0.8rem !important;
+ }
+
+ /* Multiselect styling */
+ .stMultiSelect div[data-baseweb="select"] {
+     border-radius: 16px !important;
+     border: 2px solid #e5e7eb !important;
+     background: white !important;
+     color: #1f2937 !important;
+ }
+
+ .stMultiSelect span[data-baseweb="tag"] {
+     background: #8b5cf6 !important;
+     color: white !important;
+     border-radius: 12px !important;
+     padding: 0.5rem 1rem !important;
+     font-weight: 600 !important;
+ }
+
+ /* =========================
+       6. RESPONSIVE
+       ========================= */
+
+ @media (max-width: 640px) {
+     .block-container {
+         padding-top: 1rem !important;
+         width: 100% !important;
+         padding-left: 0.5rem !important;
+         padding-right: 0.5rem !important;
+
+     }
+
+     div[data-testid="stVerticalBlock"]>div:has(div[data-testid="stVerticalBlock"]) {
+         padding: 2rem 1.5rem !important;
+         border-radius: 24px !important;
+     }
+
+     /* Fix column width on mobile */
+     /* div[data-testid="column"] {
+         width: 100% !important;
+         flex: 1 1 auto !important;
+         min-width: 100% !important;
+     } */
+
+     /* Only insight cards should stay side-by-side on mobile (cross button beside card) */
+     div[data-testid="stHorizontalBlock"]:has(.insight-card) {
+         flex-wrap: nowrap !important;
+     }
+
+
+ }
+
+ /* =========================================
+   FINAL FIX: 2 SQUARES TOP, 1 BAR BOTTOM
+   ========================================= */
+ @media (max-width: 768px) {
+
+     /* 1. Remove the empty ghost label box */
+     div[data-testid="stRadio"]>label {
+         display: none !important;
+     }
+
+     /* 2. Container: Allow wrapping so 'Other' can go to the next line */
+     div[data-testid="stRadio"]>div {
+         display: flex !important;
+         flex-wrap: wrap !important;
+         gap: 10px !important;
+         padding-top: 0 !important;
+     }
+
+     /* 3. Base style for all boxes */
+     .stRadio label {
+         background: #ffffff !important;
+         border: 1px solid #e0e0e0 !important;
+         border-radius: 12px !important;
+         padding: 15px 5px !important;
+         display: flex !important;
+         flex-direction: column !important;
+         align-items: center !important;
+         justify-content: center !important;
+         cursor: pointer !important;
+         min-height: 80px !important;
+         /* Forces Male/Female to stay same height */
+     }
+
+     /* 4. MALE & FEMALE (First two buttons) - 50% width */
+     div[data-testid="stRadio"]>div>div:nth-of-type(1),
+     div[data-testid="stRadio"]>div>div:nth-of-type(2) {
+         flex: 1 1 calc(50% - 10px) !important;
+     }
+
+     /* 5. OTHER (Third button) - 100% width */
+     div[data-testid="stRadio"]>div>div:nth-of-type(3) {
+         flex: 1 1 100% !important;
+         min-height: 50px !important;
+         /* Slightly shorter bar for 'Other' */
+     }
+
+     /* Hide default radio circles */
+     .stRadio input[type="radio"] {
+         display: none !important;
+     }
+
+     /* Selected State color */
+     div[data-testid="stRadio"] label[data-selected="true"] {
+         background: #7c3aed !important;
+         color: white !important;
+         border-color: #6d28d9 !important;
+     }
+ }
+
+ /* =========================
+   INSIGHTS PREVIEW CARDS
+   (Screen 3)
+   ========================= */
+
+ .insight-card {
+     background: #ffffff;
+     border-radius: 16px;
+     padding: 1.2rem;
+     margin-bottom: 1rem;
+     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+     animation: slideFadeIn 0.6s ease forwards;
+     opacity: 0;
+ }
+
+ .app-header {
+     text-align: center;
+     font-size: 1.8rem;
+     font-weight: 700;
+     margin-bottom: 1.5rem;
+ }
+
+ .app-title-text {
+     margin-left: 0.5rem;
+ }
+
+ .wave-emoji {
+     display: inline-block;
+     animation: wave 1.8s infinite;
+     transform-origin: 70% 70%;
+ }
+
+ @keyframes wave {
+     0% {
+         transform: rotate(0deg);
+     }
+
+     15% {
+         transform: rotate(14deg);
+     }
+
+     30% {
+         transform: rotate(-8deg);
+     }
+
+     40% {
+         transform: rotate(14deg);
+     }
+
+     50% {
+         transform: rotate(-4deg);
+     }
+
+     60% {
+         transform: rotate(10deg);
+     }
+
+     100% {
+         transform: rotate(0deg);
+     }
+ }
+
+ @keyframes slideFadeIn {
+     from {
+         opacity: 0;
+         transform: translateY(12px);
+     }
+
+     to {
+         opacity: 1;
+         transform: translateY(0);
+     }
+ }
+
+ button[kind="primary"],
+ button {
+     transition: transform 0.15s ease, box-shadow 0.15s ease;
+ }
+
+ button:hover {
+     transform: translateY(-2px);
+     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+ }
+
+ button:active {
+     transform: scale(0.98);
+ }
+
+ /* Intro screen styling */
+ .intro-subtitle {
+     text-align: center;
+     color: #6b7280;
+     font-size: 1rem;
+     margin-bottom: 1.5rem;
+ }
+
+ .intro-card {
+     max-width: 720px;
+     margin: 0 auto 2rem auto;
+     padding: 1.2rem 1.5rem;
+     background: #f9fafb;
+     border-radius: 14px;
+     text-align: center;
+     font-size: 0.95rem;
+     line-height: 1.6;
+ }
+
+ .highlight-grid {
+     display: grid;
+     grid-template-columns: repeat(3, 1fr);
+     gap: 1rem;
+     max-width: 720px;
+     margin: 0 auto;
+ }
+
+ @media (max-width: 600px) {
+     .highlight-grid {
+         grid-template-columns: 1fr;
+         /* Stack vertically on small screens */
+         gap: 0.8rem;
+     }
+ }
+
+ .highlight-item {
+     background: white;
+     border-radius: 14px;
+     padding: 1.2rem 0.8rem;
+     text-align: center;
+     font-size: 0.9rem;
+     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+     animation: slideFadeIn 0.6s ease forwards;
+ }
+
+ /* =========================
+   ADD INSIGHT CONTAINER
+   ========================= */
+
+ .add-insight-container {
+     padding: 1.5rem 0 !important;
+     margin-top: 2rem !important;
+     margin-bottom: 2rem !important;
+     text-align: center;
+ }
+
+ .add-insight-container h3 {
+     color: #4c1d95 !important;
+     font-size: 1.4rem !important;
+     font-weight: 800 !important;
+     margin-bottom: 1.2rem !important;
+     letter-spacing: -0.5px !important;
+ }
+
+ /* Playful Card Gradients */
+ .tip-card {
+     background: linear-gradient(135deg, #ffffff 0%, #fefaff 100%) !important;
+     border-bottom: 4px solid #7c3aed !important;
+ }
+
+ .task-card {
+     background: linear-gradient(135deg, #f5f3ff 0%, #faf5ff 100%) !important;
+     border-bottom: 4px solid #4c1d95 !important;
+     box-shadow: 0 4px 15px rgba(124, 58, 237, 0.1) !important;
+ }
+
+ .task-card:hover {
+     background: #ffffff !important;
+     transform: scale(1.02) !important;
+ }
+
+ .tip-title,
+ .task-title {
+     font-family: 'Inter', sans-serif !important;
+     letter-spacing: -0.5px !important;
+ }
+
+ /* Ensure the button inside the container looks premium */
+ .add-insight-container button {
+     width: 100% !important;
+     background: #7c3aed !important;
+     color: white !important;
+     font-weight: 700 !important;
+     border-radius: 12px !important;
+     padding: 0.8rem !important;
+     margin-top: 1rem !important;
+     border: none !important;
+     transition: all 0.3s ease !important;
+ }
+
+ .add-insight-container button:hover {
+     background: #6d28d9 !important;
+     transform: translateY(-2px) !important;
+     box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2) !important;
+ }
+
+ /* =========================
+    PRODUCT LEVEL: PREMIUM UI
+    ========================= */
+
+ /* Rich Parenting Tip Cards */
+ .tip-card {
+     background: white !important;
+     border-radius: 20px !important;
+     padding: 1.5rem !important;
+     margin-bottom: 1.2rem !important;
+     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+     transition: all 0.3s ease !important;
+     border: 1px solid rgba(124, 58, 237, 0.1) !important;
+ }
+
+ .tip-card:hover {
+     transform: translateY(-4px) !important;
+     box-shadow: 0 12px 32px rgba(124, 58, 237, 0.12) !important;
+ }
+
+ .tip-title {
+     font-size: 1.15rem !important;
+     font-weight: 700 !important;
+     color: #6d28d9 !important;
+     margin-bottom: 0.6rem !important;
+ }
+
+ .tip-desc {
+     font-size: 0.95rem !important;
+     color: #374151 !important;
+     line-height: 1.6 !important;
+ }
+
+ /* Rich Daily Task Cards */
+ .task-card {
+     background: #f5f3ff !important;
+     border-left: 6px solid #7c3aed !important;
+     border-radius: 16px !important;
+     padding: 1.25rem !important;
+     margin-bottom: 1.2rem !important;
+     transition: all 0.2s ease !important;
+ }
+
+ .task-card:hover {
+     background: #ede9fe !important;
+     transform: translateX(4px) !important;
+ }
+
+ .task-title {
+     font-weight: 700 !important;
+     color: #4c1d95 !important;
+     margin-bottom: 0.4rem !important;
+     font-size: 1.05rem !important;
+ }
+
+ .task-desc {
+     font-size: 0.92rem !important;
+     color: #4b5563 !important;
+     line-height: 1.5 !important;
+ }
+
+ /* Container for scrollable tips */
+ .tips-container {
+     max-height: 480px !important;
+     overflow-y: auto !important;
+     padding: 0.5rem !important;
+     margin-bottom: 1.5rem !important;
+     scrollbar-width: thin !important;
+     scrollbar-color: #7c3aed #f5f3ff !important;
+ }
+
+ .tips-container::-webkit-scrollbar {
+     width: 6px !important;
+ }
+
+ .tips-container::-webkit-scrollbar-thumb {
+     background-color: #7c3aed !important;
+     border-radius: 10px !important;
+ }
+
+ /* Premium Section Divider */
+ .section-divider {
+     height: 2px !important;
+     background: linear-gradient(90deg, transparent, #7c3aed, transparent) !important;
+     margin: 2.5rem 0 !important;
+     opacity: 0.3 !important;
+ }
+
+ /* Soft Background Pattern */
+ [data-testid="stAppViewContainer"] {
+     background-image:
+         radial-gradient(circle at 10% 10%, rgba(124, 58, 237, 0.03) 0%, transparent 40%),
+         radial-gradient(circle at 90% 90%, rgba(124, 58, 237, 0.03) 0%, transparent 40%) !important;
+     background-color: #ffffff !important;
+ }
+/* =========================
+   SAAS REFACTOR: POOL LOGIC
+   ========================= */
+
+.add-insight-container {
+    background: #fdfcff !important;
+    border: 1px dashed #7c3aed !important;
+    border-radius: 20px !important;
+    padding: 1.5rem !important;
+    margin-bottom: 2rem !important;
+}
+
+.insight-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.insight-card:hover {
+    transform: scale(1.01) !important;
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.1) !important;
+}
