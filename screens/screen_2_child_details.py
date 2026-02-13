@@ -161,6 +161,7 @@ def screen_child_details():
             "emoji": "🧠",
             "run": lambda: time.sleep(1), # Small delay for "feel"
             "next": "insights",
+            "context": "insights",
         }
 
         go_to("transition")

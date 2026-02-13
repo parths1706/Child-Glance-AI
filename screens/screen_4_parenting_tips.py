@@ -78,17 +78,23 @@ def screen_parenting_tips():
     with col_next:
         if st.button("Suggested Daily Tasks →", type="primary", key="btn_tips_to_tasks"):
             from ai.tasks_generator import generate_daily_tasks
+            
+            # Capture values before lambda to avoid session state issues
+            child_data = st.session_state.child_data
+            selected_insights = st.session_state.selected_insights
+            tips_data_copy = tips_data.copy() if isinstance(tips_data, list) else tips_data
 
             st.session_state.transition_job = {
                 "title": "Creating Daily Tasks",
                 "emoji": "🧩",
                 "run": lambda: st.session_state.update({
                     "daily_tasks": generate_daily_tasks(
-                        st.session_state.child_data,
-                        st.session_state.selected_insights,
-                        tips_data
+                        child_data,
+                        selected_insights,
+                        tips_data_copy
                     )
                 }),
                 "next": "daily_tasks",
+                "context": "tasks",
             }
             go_to("transition")

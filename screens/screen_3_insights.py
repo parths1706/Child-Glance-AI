@@ -107,16 +107,21 @@ def screen_insights():
                 # Clear old tips to force a fresh, fast load
                 st.session_state.pop("parenting_tips", None)
                 st.session_state.pop("daily_tasks", None)
+                
+                # Capture values before lambda to avoid session state issues
+                child_data = st.session_state.child_data
+                selected_insights = st.session_state.selected_insights
 
                 st.session_state.transition_job = {
                     "title": "Crafting Your Parenting Tips",
                     "emoji": "👨‍👩‍👧",
                     "run": lambda: st.session_state.update({
                         "parenting_tips": generate_parenting_tips(
-                            st.session_state.child_data,
-                            st.session_state.selected_insights
+                            child_data,
+                            selected_insights
                         )
                     }),
                     "next": "parenting_tips",
+                    "context": "tips",
                 }
                 go_to("transition")
