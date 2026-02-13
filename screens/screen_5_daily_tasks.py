@@ -1,110 +1,84 @@
 import streamlit as st
-import json
-from ai.tasks_generator import generate_daily_tasks
-from utils.fallbacks import safe_text
 from utils.navigation import go_to
-
 
 def screen_daily_tasks():
 
+    # Header
     st.markdown(
-    """
-    <div class="app-header">
-        <span class="title-emoji floating-emoji">✨</span>
-        <span class="app-title-text">Know Your Child</span>
-    </div>
-    """,
-    unsafe_allow_html=True
-    )   
-
-   
-    st.markdown(
-        "<h2 style='text-align:center'>Suggested Daily Tasks</h2>",
+        """
+        <div class="app-header">
+            <span class="title-emoji floating-emoji">✨</span>
+            <span class="app-title-text">Know Your Child</span>
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
     st.markdown(
-        "<p style='text-align:center;color:#6b7280'>Tasks that suit your child’s nature and energy.</p>",
+        "<h2 style='text-align:center'>Structured Daily Micro-Tasks</h2>",
         unsafe_allow_html=True
     )
 
-    if "daily_tasks" not in st.session_state:
-            # Fallback if transition was skipped/lost
-            with st.spinner("Finalizing your daily missions..."):
-                from ai.tips_generator import generate_parenting_tips
-                
-                # Ensure we have insights and tips
-                traits = st.session_state.get("selected_insights", [])
-                tips_raw = st.session_state.get("parenting_tips", "[]")
-                from ai.llm_client import clean_json_response
-                
-                # Just-in-time tips parse for the tasks call
-                try:
-                    tips = json.loads(clean_json_response(tips_raw))
-                except:
-                    tips = []
-
-                st.session_state.daily_tasks = generate_daily_tasks(
-                    st.session_state.child_data,
-                    traits,
-                    tips
-                )
-
-    # Parse JSON
-    tasks_data = []
-    from ai.llm_client import clean_json_response
+    # Check for report
+    report = st.session_state.get("full_report", {})
+    tasks_data = report.get("daily_tasks", [])
     
-    try:
-        raw_data = st.session_state.get("daily_tasks", "")
-        cleaned_data = clean_json_response(raw_data)
-        
-        if cleaned_data:
-            tasks_data = json.loads(cleaned_data)
-        elif isinstance(raw_data, list):
-            tasks_data = raw_data
-            
-    except Exception as e:
-        print(f"Tasks Parsing Error: {e}")
-        st.session_state.pop("daily_tasks", None)
-        st.rerun()
-
-    # 3. Final Check & Rerun if empty
     if not tasks_data:
-        st.session_state.pop("daily_tasks", None)
-        st.rerun()
+        st.error("No tasks found. Please try again.")
+        if st.button("Back to Tips"):
+            go_to("parenting_tips")
+        st.stop()
+
+    # Introduction / Reward System Info
+    st.markdown(
+        """
+        <div style="margin-bottom:1.5rem; text-align:center; padding:1rem; background:#fff7ed; border-radius:10px; border: 1px dashed #f97316;">
+            <div style="font-weight:700; color:#c2410c;">🎯 How It Works</div>
+            <p style="color:#4b5563; font-size:0.9rem; margin:0.5rem 0;">Completing all 5 tasks = 1 Star ⭐<br>5 Stars = Big Reward! (Extra screen time, treat, etc.)</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     # Render Tasks
+    icons = {
+        "Discipline Task": "🟢",
+        "Responsibility Task": "🟢",
+        "Emotional Maturity Task": "🟢",
+        "Focus Task": "🟢",
+        "Confidence Task": "🟢"
+    }
+
     for task in tasks_data:
+        task_type = task.get("type", "Task")
         title = task.get("title", "Daily Mission")
         desc = task.get("description", "")
+        criteria = task.get("completion_criteria", "")
+        
+        icon = icons.get(task_type, "🟢")
 
         st.markdown(
             f"""
-            <div class="task-card">
-                <div class="task-title">✨ {title}</div>
-                <div class="task-desc">{desc}</div>
+            <div class="task-card" style="margin-bottom:1rem;">
+                <div style="font-size:0.85rem; font-weight:700; color:#6b7280; text-transform:uppercase; margin-bottom:0.2rem;">
+                    {icon} {task_type}
+                </div>
+                <div class="task-title" style="color:#1f2937; margin-bottom:0.3rem;">{title}</div>
+                <div class="task-desc" style="color:#4b5563; margin-bottom:0.5rem;">{desc}</div>
+                <div style="font-size:0.9rem; color:#059669; font-weight:600;">
+                    ✔ {criteria}
+                </div>
             </div>
             """,
             unsafe_allow_html=True
         )
 
     st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
-
-    # Smart tip (static, manager-approved)
-    st.markdown(
-        """
-        <div class="insight-card" style="background:#f5f3ff">
-            <h4>💡 Activity Tip</h4>
-            <p>Young children thrive on repetition. Don't be afraid to repeat these tasks tomorrow!</p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
+    
+    # Navigation
     if st.button("Start Daily Missions →", key="btn_start_missions"):
-        st.session_state.active_missions = tasks_data
-        st.success("✅ Daily missions started! You can now follow them every day.")
-
+        st.success("✅ Tasks saved! Good luck today.")
+        st.balloons()
 
     if st.button("← Back", key="btn_back_to_tips"):
         go_to("parenting_tips")

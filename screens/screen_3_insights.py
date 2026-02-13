@@ -1,7 +1,6 @@
-import json
 import streamlit as st
 from utils.navigation import go_to
-from utils.insight_selector import select_insights, get_available_pool
+import time
 
 def screen_insights():
     # Header
@@ -15,81 +14,70 @@ def screen_insights():
         unsafe_allow_html=True
     )
 
+    # Check if report exists
+    report = st.session_state.get("full_report", None)
+    
+    if not report:
+        st.error("No insights found. Please start over.")
+        if st.button("Start Over"):
+            go_to("intro")
+        st.stop()
+
+    # 🌟 Sun & Moon Signs Display
+    sun_sign = report.get("sun_sign", "Unknown")
+    moon_sign = report.get("moon_sign", "Unknown")
+
     st.markdown(
-        "<h2 style='text-align:center'>Your Child at a Glance</h2>",
+        f"""
+        <div style="text-align:center; margin-bottom: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%); border-radius: 15px; border: 2px solid #fcd34d;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap: 10px;">
+                <div style="flex: 1; text-align:center;">
+                    <div style="font-size:0.9rem; color:#d97706; font-weight:700; text-transform:uppercase; margin-bottom:0.2rem;">🌟 Sun Sign</div>
+                    <div style="font-size:1.5rem; font-weight:800; color:#1f2937; line-height:1.2;">{sun_sign}</div>
+                </div>
+                <div style="color:#d1d5db; font-size: 2rem; font-weight: 300; margin-top: -5px;">|</div>
+                <div style="flex: 1; text-align:center;">
+                    <div style="font-size:0.9rem; color:#4f46e5; font-weight:700; text-transform:uppercase; margin-bottom:0.2rem;">🌙 Moon Sign</div>
+                    <div style="font-size:1.5rem; font-weight:800; color:#1f2937; line-height:1.2;">{moon_sign}</div>
+                </div>
+            </div>
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
-    # 1. Initialize Session State Pools
-    if "selected_insights" not in st.session_state:
-        # First time loading: Select suggestions from database
-        suggestions = select_insights(st.session_state.child_data)
-        st.session_state.selected_insights = suggestions
+    # Sections to display
+    sections = [
+        ("1️⃣ Core Personality", "core_personality", "trait", "#ecfdf5", "#059669"),
+        ("2️⃣ Emotional Needs", "emotional_needs", "need", "#eff6ff", "#2563eb"),
+        ("3️⃣ Strengths", "strengths", "strength", "#f5f3ff", "#7c3aed"),
+        ("4️⃣ Growth Areas", "growth_areas", "area", "#fff1f2", "#e11d48"),
+    ]
 
-    # 2. Main Display: Suggested Insights
-    st.markdown("🌟 Suggested Insights")
-    
-    if not st.session_state.selected_insights:
-        st.info("No insights selected. Choose some from the dropdown below! 👇")
-    
-    # Display Cards
-    for idx, glance in enumerate(st.session_state.selected_insights):
-        col1, col2 = st.columns([0.88, 0.12])
+    for title, key, item_key, bg_color, accent_color in sections:
+        st.markdown(f"<h3 style='color:{accent_color}; margin-top:1.5rem; border-bottom: 2px solid {accent_color}; padding-bottom:0.5rem'>{title}</h3>", unsafe_allow_html=True)
         
-        category = glance.get("category", "INSIGHT")
-        
-        with col1:
-             st.markdown(
+        items = report.get(key, [])
+        if not items:
+            st.info(f"No data for {title}")
+            continue
+            
+        for item in items:
+            name = item.get(item_key, "Trait") # e.g. "Practical Thinker"
+            desc = item.get("description", "")
+            
+            st.markdown(
                 f"""
-                <div class="insight-card" style="margin-bottom:0.8rem; padding:1.2rem; background:white; border-radius:15px; border-left: 5px solid #7c3aed; box-shadow: 0 4px 12px rgba(0,0,0,0.05)">
-                    <div style="font-size:0.75rem; font-weight:700; color:#7c3aed; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.3rem">
-                        {category}
-                    </div>
-                    <div style="font-size:1.15rem; font-weight:700; color:#1f2937; margin-bottom:0.5rem">
-                        {glance.get("title", "Insight")}
-                    </div>
-                    <div style="font-size:1rem; color:#4b5563; line-height:1.6">
-                        {glance.get("description", "")}
-                    </div>
+                <div style="margin-bottom:0.8rem; padding:1rem; background:{bg_color}; border-radius:10px; border-left: 4px solid {accent_color};">
+                    <span style="font-weight:700; color:#1f2937; font-size:1.05rem;">{name}</span>
+                    <span style="color:#6b7280; font-weight:700; margin:0 0.5rem;">–</span>
+                    <span style="color:#374151; line-height:1.5;">{desc}</span>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
-        
-        with col2:
-            st.markdown("<div style='height:30px'></div>", unsafe_allow_html=True)
-            if st.button("✖", key=f"rm_{glance.get('id')}_{idx}", help="Remove this insight"):
-                # Move from selected to pool (automatic since we filter pool by selection)
-                st.session_state.selected_insights = [
-                    item for item in st.session_state.selected_insights 
-                    if item.get("id") != glance.get("id")
-                ]
-                st.rerun()
 
-    st.markdown("<div style='margin-bottom:2.5rem'></div>", unsafe_allow_html=True)
-
-    # 3. Add Insight Section (Dropdown Pool)
-    st.markdown("### ➕ Explore More Traits")
-    
-    country = st.session_state.child_data.get("country", "India")
-    selected_ids = [item.get("id") for item in st.session_state.selected_insights]
-    available_pool = get_available_pool(country, selected_ids)
-    
-    # Categorize pool for better UX
-    pool_options = {item.get("title"): item for item in available_pool}
-    
-    selected_title = st.selectbox(
-        "Choose a trait to add:",
-        ["Search and select a trait..."] + sorted(list(pool_options.keys()))
-    )
-    
-    if selected_title != "Search and select a trait...":
-        if st.button("✨ Add to Results", type="primary"):
-            new_item = pool_options[selected_title]
-            st.session_state.selected_insights.append(new_item)
-            st.rerun()
-    
-    # 4. Navigation
+    # Navigation
     st.markdown("<div style='margin-top:2rem'></div>", unsafe_allow_html=True)
     cols = st.columns(2)
     
@@ -99,29 +87,13 @@ def screen_insights():
 
     with cols[1]:
         if st.button("Personalize My Tips →", key="btn_insights_tips", type="primary"):
-            if not st.session_state.selected_insights:
-                st.error("Please pick at least one insight to proceed! 🙏")
-            else:
-                from ai.tips_generator import generate_parenting_tips
-                
-                # Clear old tips to force a fresh, fast load
-                st.session_state.pop("parenting_tips", None)
-                st.session_state.pop("daily_tasks", None)
-                
-                # Capture values before lambda to avoid session state issues
-                child_data = st.session_state.child_data
-                selected_insights = st.session_state.selected_insights
-
-                st.session_state.transition_job = {
-                    "title": "Crafting Your Parenting Tips",
-                    "emoji": "👨‍👩‍👧",
-                    "run": lambda: st.session_state.update({
-                        "parenting_tips": generate_parenting_tips(
-                            child_data,
-                            selected_insights
-                        )
-                    }),
-                    "next": "parenting_tips",
-                    "context": "tips",
-                }
-                go_to("transition")
+            # Next screen is tips, which we already have in full_report
+            # We can use a quick transition to keep the flow feel
+            st.session_state.transition_job = {
+                "title": "Crafting Your Parenting Tips",
+                "emoji": "👨‍👩‍👧",
+                "run": lambda: time.sleep(1.5), # Fake generation time since it's pre-calculated
+                "next": "parenting_tips",
+                "context": "tips",
+            }
+            go_to("transition")

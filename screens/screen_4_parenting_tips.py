@@ -1,8 +1,6 @@
-import json
 import streamlit as st
 from utils.navigation import go_to
-from utils.fallbacks import safe_text
-
+import time
 
 def screen_parenting_tips():
 
@@ -18,53 +16,53 @@ def screen_parenting_tips():
     )
 
     st.markdown(
-        "<h2 style='text-align:center'>Parenting Tips That Fit Your Child</h2>",
+        "<h2 style='text-align:center'>Daily Parenting Focus</h2>",
         unsafe_allow_html=True
     )
 
-    from ai.llm_client import clean_json_response
-    from ai.tips_generator import generate_parenting_tips
-
-    # 1. Parse JSON from state
-    tips_data = []
-    try:
-        raw_data = st.session_state.get("parenting_tips", "")
-        cleaned_data = clean_json_response(raw_data)
-        
-        if cleaned_data:
-            tips_data = json.loads(cleaned_data)
-        elif isinstance(raw_data, list):
-            tips_data = raw_data
-            
-    except Exception as e:
-        print(f"Tips Parsing Error: {e}")
-        st.session_state.pop("parenting_tips", None)
-        st.rerun()
-
-    # 2. Safety Check (if empty, go back to insights to regenerate)
-    if not tips_data:
-        st.warning("⚠️ Tips couldn't be loaded. Retrying for you...")
-        go_to("insights")
+    # Check for report
+    report = st.session_state.get("full_report", {})
+    tip_data = report.get("parenting_tip", {})
+    
+    if not tip_data:
+        st.error("Tips not found. Please try again.")
+        if st.button("Back to Insights"):
+            go_to("insights")
         st.stop()
 
-    # Render Tips
-    st.markdown('<div class="tips-container">', unsafe_allow_html=True)
-    for i, tip in enumerate(tips_data):
-        title = tip.get("title", f"Tip {i+1}")
-        desc = tip.get("description", "")
+    # Display Tip Sections
+    # 1. Responsibility
+    st.markdown(
+        f"""
+        <div style="margin-bottom:1rem; padding:1.5rem; background:#f0f9ff; border-radius:12px; border-left: 5px solid #0ea5e9;">
+            <div style="font-weight:700; color:#0369a1; margin-bottom:0.5rem; font-size:1.1rem;">🎯 Daily Responsibility</div>
+            <div style="color:#334155; font-size:1.05rem; line-height:1.6;">{tip_data.get('responsibility', '')}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-        st.markdown(
-            f"""
-            <div class="tip-card">
-                <div class="tip-title">⭐ {title}</div>
-                <div class="tip-desc">{desc}</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    st.markdown('</div>', unsafe_allow_html=True)
+    # 2. Appreciation
+    st.markdown(
+        f"""
+        <div style="margin-bottom:1rem; padding:1.5rem; background:#fdf2f8; border-radius:12px; border-left: 5px solid #db2777;">
+            <div style="font-weight:700; color:#be185d; margin-bottom:0.5rem; font-size:1.1rem;">❤️ Moment of Appreciation</div>
+            <div style="color:#334155; font-size:1.05rem; line-height:1.6;">{tip_data.get('appreciation', '')}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    # 3. Balance Advice
+    st.markdown(
+        f"""
+        <div style="margin-bottom:2rem; padding:1.5rem; background:#f5f3ff; border-radius:12px; border-left: 5px solid #7c3aed;">
+            <div style="font-weight:700; color:#6d28d9; margin-bottom:0.5rem; font-size:1.1rem;">⚖️ Balance Advice</div>
+            <div style="color:#334155; font-size:1.05rem; line-height:1.6; font-style:italic;">"{tip_data.get('balance_advice', '')}"</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     # Navigation
     cols = st.columns(2)
@@ -77,23 +75,11 @@ def screen_parenting_tips():
 
     with col_next:
         if st.button("Suggested Daily Tasks →", type="primary", key="btn_tips_to_tasks"):
-            from ai.tasks_generator import generate_daily_tasks
-            
-            # Capture values before lambda to avoid session state issues
-            child_data = st.session_state.child_data
-            selected_insights = st.session_state.selected_insights
-            tips_data_copy = tips_data.copy() if isinstance(tips_data, list) else tips_data
-
+            # Tasks are already in full_report, just transition
             st.session_state.transition_job = {
                 "title": "Creating Daily Tasks",
                 "emoji": "🧩",
-                "run": lambda: st.session_state.update({
-                    "daily_tasks": generate_daily_tasks(
-                        child_data,
-                        selected_insights,
-                        tips_data_copy
-                    )
-                }),
+                "run": lambda: time.sleep(1.5), # Fake generation
                 "next": "daily_tasks",
                 "context": "tasks",
             }

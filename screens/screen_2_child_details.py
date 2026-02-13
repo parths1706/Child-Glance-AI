@@ -37,60 +37,83 @@ def screen_child_details():
         max_value=date.today()
     )
 
-    from utils.location_data import get_all_countries, load_city_data, get_visitor_country, get_cities_by_country
+    from utils.location_data import get_all_countries, get_states_by_country, get_cities_by_state, get_cities_by_country, get_visitor_country
 
-    # 🌍 Country Selection with Search and Auto-Detection
+    # 🌍 Country Selection
     countries = get_all_countries()
     
-    # 🕵️ Detect Visitor Country for auto-selection
     if "detected_country" not in st.session_state:
-        # with st.spinner("Detecting your location..."): # Spinner here can be jarring on every rerun
         st.session_state.detected_country = get_visitor_country()
 
-    # Find index of detected country
     default_index = 0
     if st.session_state.detected_country and st.session_state.detected_country in countries:
         default_index = countries.index(st.session_state.detected_country)
     else:
-        # Fallback to India if detected fails
         try:
             default_index = countries.index("India")
         except ValueError:
             default_index = 0
 
     country = st.selectbox(
-        "🌍 Birth Country (Search to select)",
+        "🌍 Birth Country",
         countries,
         index=default_index,
         help="Start typing your country name to search"
     )
 
-    # 📍 City Selection (Seamless Search-or-Type)
-    # Cache cities in session state to avoid multiple API calls during same session country choice
+    # 🗺️ State Selection
+    if "states_cache" not in st.session_state:
+        st.session_state.states_cache = {}
+
+    if country not in st.session_state.states_cache:
+        with st.spinner(f"Finding states in {country}..."):
+            st.session_state.states_cache[country] = sorted(get_states_by_country(country))
+    
+    states_list = st.session_state.states_cache[country]
+    selected_state = None
+
+    if states_list:
+        selected_state = st.selectbox(
+            "🗺️ State / Province",
+            ["Select State..."] + states_list,
+            help="Select the state to filter cities"
+        )
+    
+    # 📍 City Selection
     if "cities_cache" not in st.session_state:
         st.session_state.cities_cache = {}
     
-    if country not in st.session_state.cities_cache:
-        with st.spinner(f"Getting cities for {country}..."):
-            st.session_state.cities_cache[country] = sorted(get_cities_by_country(country))
+    # Key for caching depends on whether state is selected
+    cache_key = f"{country}_{selected_state}" if selected_state and selected_state != "Select State..." else country
+
+    if cache_key not in st.session_state.cities_cache:
+        with st.spinner(f"Finding cities..."):
+            if selected_state and selected_state != "Select State...":
+                cities = get_cities_by_state(country, selected_state)
+            else:
+                cities = get_cities_by_country(country)
+            st.session_state.cities_cache[cache_key] = sorted(cities)
     
-    city_list = st.session_state.cities_cache[country]
-    
-    # Unified "One Box" logic
+    city_list = st.session_state.cities_cache[cache_key]
+
+    # Unified "One Box" logic for City
     if "city_mode" not in st.session_state:
         st.session_state.city_mode = "select"
 
     if st.session_state.city_mode == "select":
+        # Filter out empty cities if any
+        clean_city_list = [c for c in city_list if c]
+        
         city_choice = st.selectbox(
             "📍 Birth City",
-            ["Search your city / write your city "] + city_list + ["✍️ My city is not listed (Type manually)"],
-            help="Common cities are listed here. Start typing to search!"
+            ["Type to search..."] + clean_city_list + ["✍️ My city is not listed (Type manually)"],
+            help="Start typing to search your city!"
         )
         
         if city_choice == "✍️ My city is not listed (Type manually)":
             st.session_state.city_mode = "text"
             st.rerun()
-        elif city_choice == "Search your city / write your city name":
+        elif city_choice == "Type to search...":
             city = None
         else:
             city = city_choice
@@ -155,11 +178,18 @@ def screen_child_details():
             "birth_time": birth_time,
         }
 
-        # Simple transition to results page
+        from ai.astrology_generator import generate_comprehensive_report
+        
+        # Capture strictly needed data for lambda closure
+        c_data = st.session_state.child_data
+
+        # Comprehensive generation transition
         st.session_state.transition_job = {
-            "title": "Identifying Unique Personality Traits",
-            "emoji": "🧠",
-            "run": lambda: time.sleep(1), # Small delay for "feel"
+            "title": "Mapping the Stars & Personality",
+            "emoji": "✨",
+            "run": lambda: st.session_state.update({
+                "full_report": generate_comprehensive_report(c_data)
+            }),
             "next": "insights",
             "context": "insights",
         }

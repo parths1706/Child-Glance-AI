@@ -22,6 +22,32 @@ def get_visitor_country():
         pass
     return None
 
+def get_states_by_country(country_name):
+    """Fetches states for a given country."""
+    try:
+        url = "https://countriesnow.space/api/v0.1/countries/states"
+        response = requests.post(url, json={"country": country_name}, timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            if not data.get("error"):
+                return [s["name"] for s in data.get("data", {}).get("states", [])]
+    except Exception:
+        pass
+    return []
+
+def get_cities_by_state(country_name, state_name):
+    """Fetches cities for a given country and state."""
+    try:
+        url = "https://countriesnow.space/api/v0.1/countries/state/cities"
+        response = requests.post(url, json={"country": country_name, "state": state_name}, timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            if not data.get("error"):
+                return data.get("data", [])
+    except Exception:
+        pass
+    return []
+
 def get_cities_by_country(country_name):
     """Fetches all cities for a given country from a global API."""
     try:
