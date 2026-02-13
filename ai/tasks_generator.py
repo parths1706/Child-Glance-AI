@@ -29,7 +29,7 @@ TASK:
 Create 4-6 VERY SIMPLE tasks for the CHILD to do. The child is {age_desc} old!
 
 CRITICAL RULES - READ CAREFULLY:
-1. BABY WORDS ONLY: Use the SIMPLEST words possible! Like: run, jump, play, draw, sing, hug, clean, put, take, give, help, count, color, dance, clap! 👶
+1. BABY WORDS ONLY: Use the SIMPLEST words possible! Like: run, jump, play, draw, sing, hug, clean, put, take, give, help, count, color ,task according to age of child not same task for diffrent age child this are the just example task must be simple and doable but it improves child personality ! 👶
 2. NO BIG WORDS: Do NOT use words like: comfortably, charades, emotions, puzzle, showcase, treasure! These are too hard! ❌
 3. AGE MATCH: A {age_desc} child must be able to DO this task easily! 
    - Age 0-2: Very very simple! Like clap hands, hug teddy, put toy in box
