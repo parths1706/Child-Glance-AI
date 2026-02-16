@@ -23,28 +23,8 @@ def screen_insights():
             go_to("intro")
         st.stop()
 
-    # 🌟 Sun & Moon Signs Display
-    sun_sign = report.get("sun_sign", "Unknown")
-    moon_sign = report.get("moon_sign", "Unknown")
-
-    st.markdown(
-        f"""
-        <div style="text-align:center; margin-bottom: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%); border-radius: 15px; border: 2px solid #fcd34d;">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap: 10px;">
-                <div style="flex: 1; text-align:center;">
-                    <div style="font-size:0.9rem; color:#d97706; font-weight:700; text-transform:uppercase; margin-bottom:0.2rem;">🌟 Sun Sign</div>
-                    <div style="font-size:1.5rem; font-weight:800; color:#1f2937; line-height:1.2;">{sun_sign}</div>
-                </div>
-                <div style="color:#d1d5db; font-size: 2rem; font-weight: 300; margin-top: -5px;">|</div>
-                <div style="flex: 1; text-align:center;">
-                    <div style="font-size:0.9rem; color:#4f46e5; font-weight:700; text-transform:uppercase; margin-bottom:0.2rem;">🌙 Moon Sign</div>
-                    <div style="font-size:1.5rem; font-weight:800; color:#1f2937; line-height:1.2;">{moon_sign}</div>
-                </div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    # Sun & Moon Signs Display REMOVED as per user request
+    # Original code stored in screens/screen_3_insights_backup.py
 
     # Sections to display
     sections = [

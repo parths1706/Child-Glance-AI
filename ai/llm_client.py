@@ -1,5 +1,5 @@
 import os
-from groq import Groq
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -26,22 +26,43 @@ def clean_json_response(raw_response):
     return raw_response.strip()
 
 def ask_llm(prompt: str) -> str:
-    api_key = os.getenv("GROQ_API_KEY")
+    api_key = os.getenv("DEEPSEEK_API_KEY")
 
     if not api_key:
+        print("!!! LLM ERROR: DEEPSEEK_API_KEY not found in environment variables.")
         return ""
 
+    url = "https://api.deepseek.com/chat/completions"
+    
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+    
+    data = {
+        "model": "deepseek-chat",
+        "messages": [
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.7
+    }
+
     try:
-        client = Groq(api_key=api_key)
+        response = requests.post(url, json=data, headers=headers)
+        response.raise_for_status() # Raise an exception for bad status codes
+        
+        json_response = response.json()
+        
+        # Parse OpenAI-compatible response
+        if "choices" in json_response and len(json_response["choices"]) > 0:
+            return json_response["choices"][0]["message"]["content"].strip()
+        else:
+            print(f"!!! LLM ERROR: Unexpected response format: {json_response}")
+            return ""
 
-        response = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.8,
-        )
-
-        return response.choices[0].message.content.strip()
-
+    except requests.exceptions.RequestException as e:
+        print(f"!!! LLM NETWORK ERROR: {e}")
+        return ""
     except Exception as e:
         print(f"!!! LLM ERROR: {e}")
         return ""
