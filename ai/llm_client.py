@@ -26,21 +26,23 @@ def clean_json_response(raw_response):
     return raw_response.strip()
 
 def ask_llm(prompt: str) -> str:
-    api_key = os.getenv("DEEPSEEK_API_KEY")
+    api_key = os.getenv("OPENROUTER_API_KEY")
 
     if not api_key:
-        print("!!! LLM ERROR: DEEPSEEK_API_KEY not found in environment variables.")
+        print("!!! LLM ERROR: OPENROUTER_API_KEY not found in environment variables.")
         return ""
 
-    url = "https://api.deepseek.com/chat/completions"
+    url = "https://openrouter.ai/api/v1/chat/completions"
     
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
+        "HTTP-Referer": "https://github.com/parths1706/Child-Glance-AI", # Optional, for including your app on openrouter.ai rankings.
+        "X-Title": "Parenting Guide AI", # Optional. Shows in rankings on openrouter.ai.
     }
     
     data = {
-        "model": "deepseek-chat",
+        "model": "deepseek/deepseek-chat",
         "messages": [
             {"role": "user", "content": prompt}
         ],

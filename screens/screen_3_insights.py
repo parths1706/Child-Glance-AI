@@ -23,8 +23,7 @@ def screen_insights():
             go_to("intro")
         st.stop()
 
-    # Sun & Moon Signs Display REMOVED as per user request
-    # Original code stored in screens/screen_3_insights_backup.py
+
 
     # Sections to display
     sections = [

@@ -113,6 +113,17 @@ def screen_transition():
         
     except Exception as e:
         st.error(f"⚠️ Something went wrong: {str(e)}")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+             if st.button("🔄 Retry", key="retry_transition"):
+                 st.rerun()
+        
+        with col2:
+             from utils.navigation import go_back
+             if st.button("⬅️ Go Back", key="back_from_error"):
+                 go_back()
+                 
         st.stop()
     
     # Clean up and navigate
