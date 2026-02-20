@@ -53,20 +53,24 @@ def screen_daily_tasks():
         task_type = task.get("type", "Task")
         title = task.get("title", "Daily Mission")
         desc = task.get("description", "")
-        criteria = task.get("completion_criteria", "")
+        todo = task.get("todo_task", "")
+        stars = task.get("reward_stars", 10)
         
         icon = icons.get(task_type, "🟢")
 
         st.markdown(
             f"""
-            <div class="task-card" style="margin-bottom:1rem;">
+            <div class="task-card" style="margin-bottom:1rem; position:relative;">
+                <div style="position:absolute; top:1rem; right:1rem; background:#fef3c7; color:#d97706; padding:0.25rem 0.6rem; border-radius:20px; font-weight:700; font-size:0.85rem; border:1px solid #fbbf24;">
+                    ⭐ {stars} Stars
+                </div>
                 <div style="font-size:0.85rem; font-weight:700; color:#6b7280; text-transform:uppercase; margin-bottom:0.2rem;">
                     {icon} {task_type}
                 </div>
-                <div class="task-title" style="color:#1f2937; margin-bottom:0.3rem;">{title}</div>
+                <div class="task-title" style="color:#1f2937; margin-bottom:0.3rem; padding-right:5rem;">{title}</div>
                 <div class="task-desc" style="color:#4b5563; margin-bottom:0.5rem;">{desc}</div>
-                <div style="font-size:0.9rem; color:#059669; font-weight:600;">
-                    ✔ {criteria}
+                <div style="font-size:0.95rem; color:#059669; font-weight:700; background:#f0fdf4; padding:0.5rem; border-radius:6px; border-left:4px solid #10b981;">
+                    ⭐ To-Do: {todo}
                 </div>
             </div>
             """,

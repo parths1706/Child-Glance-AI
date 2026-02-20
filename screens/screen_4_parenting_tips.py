@@ -75,11 +75,26 @@ def screen_parenting_tips():
 
     with col_next:
         if st.button("Suggested Daily Tasks →", type="primary", key="btn_tips_to_tasks"):
-            # Tasks are already in full_report, just transition
+            def run_tasks_logic():
+                from utils.api_client import fetch_daily_tasks
+                
+                current_report = st.session_state.get("full_report", {})
+                child_payload = st.session_state.get("child_details_payload", {})
+                
+                # tips is stored under 'parenting_tip' from previous step
+                tips_output = current_report.get("parenting_tip", {})
+                
+                tasks = fetch_daily_tasks(child_payload, tips_output)
+                if not tasks:
+                    st.error("Failed to generate tasks.")
+                    st.stop()
+                    
+                st.session_state["full_report"]["daily_tasks"] = tasks.get("daily_tasks", [])
+
             st.session_state.transition_job = {
                 "title": "Creating Daily Tasks",
                 "emoji": "🧩",
-                "run": lambda: time.sleep(1.5), # Fake generation
+                "run": run_tasks_logic,
                 "next": "daily_tasks",
                 "context": "tasks",
             }

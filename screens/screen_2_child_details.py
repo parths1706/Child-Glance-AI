@@ -169,27 +169,54 @@ def screen_child_details():
         for k in keys_to_clear:
             st.session_state.pop(k, None)
 
+        # Prepare Pydantic-compatible payload
+        c_payload = {
+            "dob": dob.strftime("%Y-%m-%d"),
+            "tob": birth_time if birth_time else "12:00 PM",
+            "city": city, 
+            "country": country,
+            "name": "Child",
+            "age_years": age_years,
+            "age_months": age_months
+        }
+        
+        # Save for later use in chain
+        st.session_state["child_details_payload"] = c_payload
         st.session_state.child_data = {
             "dob": dob,
-            "age_years": age_years,
-            "age_months": age_months,
             "country": country,
-            "city": city,
-            "birth_time": birth_time,
+            # include other fields if needed by transition screen logic
         }
 
-        from ai.astrology_generator import generate_comprehensive_report
-        
-        # Capture strictly needed data for lambda closure
-        c_data = st.session_state.child_data
+        # wrapper function for step-by-step API calls
+        def run_transition_logic():
+            from utils.api_client import fetch_astrology, fetch_insights
+            
+            # 1. Astrology
+            astro = fetch_astrology(c_payload)
+            if not astro:
+                 st.error("Failed to fetch astrology data.")
+                 st.stop()
+                 
+            # 2. Insights
+            insights = fetch_insights(c_payload, astro)
+            if not insights:
+                 st.error("Failed to fetch insights.")
+                 st.stop()
+            
+            # Flatten/Merge into full_report for compatibility
+            report_data = {}
+            report_data.update(astro)
+            report_data.update(insights)
+            
+            st.session_state["full_report"] = report_data
+
 
         # Comprehensive generation transition
         st.session_state.transition_job = {
             "title": "Mapping the Stars & Personality",
             "emoji": "✨",
-            "run": lambda: st.session_state.update({
-                "full_report": generate_comprehensive_report(c_data)
-            }),
+            "run": run_transition_logic,
             "next": "insights",
             "context": "insights",
         }

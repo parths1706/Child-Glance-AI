@@ -6,3 +6,5 @@ python-dotenv
 groq
 google-generativeai
 pycountry
+fastapi
+uvicorn
